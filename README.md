@@ -78,9 +78,9 @@ npm install
 cd client && npm install && cd ..
 ```
 
-### Configure
+### Configure (for Dev)
 
-Copy `.env.example` to `.env`:
+Make `.env` file :
 
 ```env
 PORT=3000
