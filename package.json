@@ -1,0 +1,23 @@
+{
+  "name": "nexus-chat",
+  "version": "1.0.0",
+  "scripts": {
+    "start": "node server/index.js",
+    "dev": "nodemon server/index.js",
+    "install:all": "npm install && cd client && npm install",
+    "build:client": "cd client && npm run build",
+    "start:prod": "NODE_ENV=production node server/index.js"
+  },
+  "dependencies": {
+    "bcryptjs": "^2.4.3",
+    "cors": "^2.8.5",
+    "dotenv": "^16.4.5",
+    "express": "^4.18.2",
+    "jsonwebtoken": "^9.0.2",
+    "mongoose": "^8.3.0",
+    "socket.io": "^4.7.2"
+  },
+  "devDependencies": {
+    "nodemon": "^3.0.2"
+  }
+}

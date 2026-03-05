@@ -1,0 +1,150 @@
+<div class="chat-layout" (click)="closePicker()">
+
+  <!-- ── Sidebar ─────────────────────────────────────────────────────────── -->
+  <aside class="sidebar" [class.open]="sidebarOpen">
+
+    <div class="sidebar-header">
+      <div class="logo-lockup">
+        <div class="logo-icon">
+          <svg width="18" height="18" viewBox="0 0 28 28" fill="none">
+            <path d="M14 2L26 8v12L14 26 2 20V8L14 2z" stroke="currentColor" stroke-width="1.5"/>
+            <circle cx="14" cy="14" r="2.5" fill="currentColor"/>
+          </svg>
+        </div>
+        <span>NEXUS</span>
+      </div>
+      <button class="close-btn" (click)="sidebarOpen = false">✕</button>
+    </div>
+
+    <!-- Channel -->
+    <div class="section-label">Channel</div>
+    <div class="channel-item">
+      <span class="hash">#</span> general
+    </div>
+
+    <!-- Online users -->
+    <div class="section-label">Online — {{ onlineUsers.length }}</div>
+    <div class="user-row" *ngFor="let u of onlineUsers">
+      <div class="avatar" [style.background]="u.avatarColor">{{ initial(u.username) }}</div>
+      <span>{{ u.username }}</span>
+      <span class="you-tag" *ngIf="u.username === auth.currentUser?.username">(you)</span>
+    </div>
+
+    <!-- Current user + logout -->
+    <div class="sidebar-footer">
+      <div class="avatar" [style.background]="auth.currentUser?.avatarColor">
+        {{ initial(auth.currentUser?.username ?? null) }}
+      </div>
+      <span class="me-name">{{ auth.currentUser?.username }}</span>
+      <button class="logout-btn" (click)="logout()" title="Sign out">Sign Out</button>
+    </div>
+
+  </aside>
+
+  <!-- ── Main ────────────────────────────────────────────────────────────── -->
+  <main class="main-panel">
+
+    <!-- Topbar -->
+    <header class="topbar">
+      <button class="menu-btn" (click)="sidebarOpen = true">☰</button>
+      <span class="channel-name"># general</span>
+      <div class="status-chip" [class.online]="isConnected">
+        {{ isConnected ? 'Connected' : 'Disconnected' }}
+      </div>
+    </header>
+
+    <!-- Message list -->
+    <div class="message-list" #messageList>
+
+      <!-- Loading -->
+      <div class="center-msg" *ngIf="loading">Loading messages...</div>
+
+      <!-- Empty -->
+      <div class="center-msg" *ngIf="!loading && messages.length === 0">
+        No messages yet. Say hi! 👋
+      </div>
+
+      <!-- Messages -->
+      <ng-container *ngFor="let msg of messages">
+
+        <!-- System message (e.g. "Alice joined") -->
+        <div class="system-msg" *ngIf="msg.type === 'system'">
+          {{ msg.content }}
+        </div>
+
+        <!-- Regular message -->
+        <div class="msg-row" *ngIf="msg.type === 'text'" [class.own]="isOwn(msg)">
+
+          <!-- Avatar (only shown for others) -->
+          <div class="msg-avatar" *ngIf="!isOwn(msg)" [style.background]="msg.avatarColor">
+            {{ initial(msg.username) }}
+          </div>
+
+          <div class="msg-body">
+            <!-- Sender name + time (only for others) -->
+            <div class="msg-meta" *ngIf="!isOwn(msg)">
+              <span class="sender" [style.color]="msg.avatarColor">{{ msg.username }}</span>
+              <span class="time">{{ formatTime(msg.created_at) }}</span>
+            </div>
+
+            <!-- Bubble -->
+            <div class="bubble-wrap">
+              <div class="bubble" [class.own-bubble]="isOwn(msg)">
+                <p>{{ msg.content }}</p>
+                <span class="bubble-time" *ngIf="isOwn(msg)">{{ formatTime(msg.created_at) }}</span>
+              </div>
+
+              <!-- Emoji reaction button -->
+              <button class="emoji-trigger" (click)="togglePicker(msg.id, $event)" title="React">😊</button>
+
+              <!-- Reaction picker dropdown -->
+              <div class="reaction-picker" *ngIf="reactionPickerFor === msg.id" (click)="$event.stopPropagation()">
+                <button *ngFor="let e of emojis" (click)="addReaction(msg.id, e)">{{ e }}</button>
+              </div>
+            </div>
+
+            <!-- Reaction chips -->
+            <div class="reactions" *ngIf="msg.reactions?.length">
+              <button
+                *ngFor="let r of msg.reactions"
+                class="reaction-chip"
+                [class.active]="hasReacted(r)"
+                [title]="r.users.join(', ')"
+                (click)="addReaction(msg.id, r.emoji)">
+                {{ r.emoji }} {{ r.count }}
+              </button>
+            </div>
+          </div>
+
+        </div>
+      </ng-container>
+
+    </div>
+
+    <!-- Typing indicator -->
+    <div class="typing-bar" *ngIf="typingUsers.length > 0">
+      <span class="dot"></span><span class="dot"></span><span class="dot"></span>
+      {{ getTypingText() }}
+    </div>
+
+    <!-- Input area -->
+    <div class="input-area">
+      <textarea
+        [(ngModel)]="messageText"
+        (keydown)="onKeyDown($event)"
+        (input)="onInput()"
+        placeholder="Message #general  (Enter to send)"
+        rows="1"
+        [disabled]="!isConnected">
+      </textarea>
+      <button class="send-btn" (click)="sendMessage()" [disabled]="!messageText.trim() || !isConnected">
+        Send
+      </button>
+    </div>
+
+  </main>
+
+  <!-- Mobile overlay -->
+  <div class="overlay" [class.visible]="sidebarOpen" (click)="sidebarOpen = false"></div>
+
+</div>

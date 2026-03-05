@@ -1,0 +1,50 @@
+<div class="auth-page">
+  <div class="orb orb-1"></div>
+  <div class="orb orb-2"></div>
+
+  <div class="auth-container">
+
+    <!-- Logo -->
+    <div class="logo">
+      <div class="logo-icon">
+        <svg width="22" height="22" viewBox="0 0 28 28" fill="none">
+          <path d="M14 2L26 8v12L14 26 2 20V8L14 2z" stroke="currentColor" stroke-width="1.5"/>
+          <circle cx="14" cy="14" r="2.5" fill="currentColor"/>
+        </svg>
+      </div>
+      <span class="logo-text">NEXUS</span>
+    </div>
+
+    <div class="auth-card">
+
+      <!-- Tab switcher -->
+      <div class="tabs">
+        <div class="tab-indicator" [style.left]="mode === 'login' ? '4px' : 'calc(50% + 4px)'"></div>
+        <button [class.active]="mode === 'login'"    (click)="switchMode('login')"    type="button">Sign In</button>
+        <button [class.active]="mode === 'register'" (click)="switchMode('register')" type="button">Register</button>
+      </div>
+
+      <h2>{{ mode === 'login' ? 'Welcome back' : 'Create account' }}</h2>
+
+      <!-- Error -->
+      <div class="error" *ngIf="error">{{ error }}</div>
+
+      <!-- Fields -->
+      <div class="field">
+        <label>Username</label>
+        <input type="text"     [(ngModel)]="username" placeholder="Enter username" autocomplete="username" />
+      </div>
+
+      <div class="field">
+        <label>Password</label>
+        <input type="password" [(ngModel)]="password" placeholder="Enter password" autocomplete="current-password"
+               (keydown.enter)="submit()" />
+      </div>
+
+      <button class="submit-btn" (click)="submit()" [disabled]="loading">
+        {{ loading ? 'Loading...' : (mode === 'login' ? 'Sign In' : 'Create Account') }}
+      </button>
+
+    </div>
+  </div>
+</div>
