@@ -113,15 +113,6 @@ cd client && npm start -- --host 0.0.0.0
 Open http://localhost:4200, register a user, and start chatting.  
 Open a second tab with a different user to test real-time features.
 
-### Build for Production
-
-```bash
-npm run build:client   # Builds Angular into server/public/
-npm run start:prod     # Serves everything from http://localhost:3000
-```
-
----
-
 ## API Reference
 
 | Method | Endpoint | Auth | Description |
